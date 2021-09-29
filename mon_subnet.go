@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
-	"flag"
+	"encoding/binary"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -16,11 +18,19 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func recordMetrics(subnet string, client *ec2.Client) {
+func recordSubnetMetrics(subnet string, client *ec2.Client) {
 	var (
 		ipsFree = promauto.NewGauge(prometheus.GaugeOpts{
-			Name: "aws_subnet_ips_free",
-			Help: "Number of available Ips in subnet",
+			Name:        "aws_subnet_ips_free",
+			Help:        "Number of available Ips in subnet",
+			ConstLabels: prometheus.Labels{"subnet": subnet},
+		})
+	)
+	var (
+		ipsTotal = promauto.NewGauge(prometheus.GaugeOpts{
+			Name:        "aws_subnet_ips_total",
+			Help:        "Number of total Ips in subnet",
+			ConstLabels: prometheus.Labels{"subnet": subnet},
 		})
 	)
 	go func() {
@@ -33,7 +43,11 @@ func recordMetrics(subnet string, client *ec2.Client) {
 				fmt.Println(err)
 			}
 			for _, s := range output.Subnets {
-				fmt.Println(*s.AvailableIpAddressCount)
+				_, ipv4Net, err := net.ParseCIDR(*s.CidrBlock)
+				if err != nil {
+					log.Fatal(err)
+				}
+				ipsTotal.Set(float64(binary.BigEndian.Uint32(ipv4Net.Mask) ^ 0xffffffff))
 				ipsFree.Set(float64(*s.AvailableIpAddressCount))
 			}
 			time.Sleep(30 * time.Second)
@@ -42,28 +56,20 @@ func recordMetrics(subnet string, client *ec2.Client) {
 }
 
 func main() {
-	subnetArgs := flag.String("s", "", "Subnets to monitor")
-	flag.Parse()
-
-	if *subnetArgs == "" {
-		fmt.Printf("%s subnet1,subnet2,...", os.Args[0])
-		os.Exit(1)
-	}
-
-	fmt.Println(*subnetArgs)
-	subnets := strings.Split(*subnetArgs, ",")
-	fmt.Println(subnets)
-
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		panic("configuration error, " + err.Error())
+		panic("Configuration error, " + err.Error())
 	}
-	client := ec2.NewFromConfig(cfg)
 
-	for _, s := range subnets {
-		recordMetrics(s, client)
+	// Handle subnets
+	subnetEnv := os.Getenv("AWS_MONITOR_SUBNETS")
+	if subnetEnv != "" {
+		subnets := strings.Split(subnetEnv, ",")
+		client := ec2.NewFromConfig(cfg)
+		for _, s := range subnets {
+			recordSubnetMetrics(s, client)
+		}
 	}
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
-
 }
