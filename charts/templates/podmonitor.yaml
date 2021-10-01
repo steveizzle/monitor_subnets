@@ -1,0 +1,17 @@
+{{- if .Values.podMonitor.create -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  labels:
+    {{- include "cloud-exporter.labels" . | nindent 4 }}
+  name: {{ include "cloud-exporter.fullname" . }}
+spec:
+  podMetricsEndpoints:
+  - port: metrics
+  selector:
+    matchLabels:
+      {{- include "cloud-exporter.selectorLabels" . | nindent 6 }}
+      {{- with .Values.podMonitor.additionalLabels }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+{{- end }}
