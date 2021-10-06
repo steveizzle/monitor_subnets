@@ -23,6 +23,7 @@ jobs:
           tags: |
             ghcr.io/steveizzle/aws-metrics-prom-exporter:${{ github.sha }}
   release_chart:
+    needs: [push_to_registry]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,5 +43,7 @@ jobs:
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.2.1
+        with:
+          charts_dir: /charts
         env:
           CR_TOKEN: "${{ secrets.REGISTRY_TOKEN }}"
