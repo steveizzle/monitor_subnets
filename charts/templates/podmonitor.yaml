@@ -4,6 +4,9 @@ kind: PodMonitor
 metadata:
   labels:
     {{- include "cloud-exporter.labels" . | nindent 4 }}
+    {{- with .Values.podMonitor.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   name: {{ include "cloud-exporter.fullname" . }}
 spec:
   podMetricsEndpoints:
@@ -11,7 +14,4 @@ spec:
   selector:
     matchLabels:
       {{- include "cloud-exporter.selectorLabels" . | nindent 6 }}
-      {{- with .Values.podMonitor.additionalLabels }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
 {{- end }}
