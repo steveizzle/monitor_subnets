@@ -2,6 +2,10 @@ name: Go
 
 on:
   push:
+    branches: 
+      - main
+    paths:
+      - 'charts/**'
 jobs:
   release_chart:
     runs-on: ubuntu-latest
