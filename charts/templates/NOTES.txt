@@ -1,3 +1,0 @@
-The application will run, pull the specified metrics from your cloud provider and publish the metrics for prometheus. 
-
-Make sure you have the necessary rights configured to request the metrics from your cloud provider
