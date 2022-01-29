@@ -50,8 +50,6 @@ func recordSubnetMetrics(subnet string, client *ec2.Client) {
 			Help:        "Number of available Ips in subnet",
 			ConstLabels: prometheus.Labels{"subnet": subnet},
 		})
-	)
-	var (
 		ipsTotal = promauto.NewGauge(prometheus.GaugeOpts{
 			Name:        "aws_subnet_ips_total",
 			Help:        "Number of total Ips in subnet",
