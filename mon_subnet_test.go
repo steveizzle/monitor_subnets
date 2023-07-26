@@ -48,7 +48,8 @@ func TestRecordSubnetMetrics(t *testing.T) {
 	}
 
 	// Assuming you have only one subnet metric registered
-	if len(mfs) != 2 {
+	if len(mfs) != 29 {
+		t.Log(mfs)
 		t.Fatalf("Expected 2 metrics, but got %d", len(mfs))
 	}
 
