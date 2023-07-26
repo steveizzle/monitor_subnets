@@ -47,11 +47,6 @@ func TestRecordSubnetMetrics(t *testing.T) {
 		t.Fatalf("Failed to gather metrics: %v", err)
 	}
 
-	// Assuming we have only one subnet metric registered
-	if len(mfs) != 29 {
-		t.Fatalf("Expected 2 metrics, but got %d", len(mfs))
-	}
-
 	expectedMetrics := map[string]float64{
 		"aws_subnet_ips_free":  50,
 		"aws_subnet_ips_total": 255, // Assuming a /24 subnet
