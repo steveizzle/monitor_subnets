@@ -1,4 +1,4 @@
-name: Go test
+name: PR test
 
 on:
   push:
@@ -22,10 +22,22 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Install dependencies
         run: go get .
-      - name: Test with Go
+      - name: Unit Testing
         run: go test -json > TestResults-${{ matrix.go-version }}.json
       - name: Upload Go test results
         uses: actions/upload-artifact@v3
         with:
           name: Go-results-${{ matrix.go-version }}
           path: TestResults-${{ matrix.go-version }}.json
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t ghcr.io/steveizzle/aws-metrics-prom-exporter:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/steveizzle/aws-metrics-prom-exporter:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
