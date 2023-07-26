@@ -42,8 +42,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// EC2Client defines the methods we use from ec2.Client
+type EC2Client interface {
+	DescribeSubnets(ctx context.Context, params *ec2.DescribeSubnetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSubnetsOutput, error)
+}
+
 // The function gets the AWS subnet data and exposes the corresponding metrics
-func recordSubnetMetrics(subnet string, client *ec2.Client) {
+func recordSubnetMetrics(subnet string, client EC2Client) {
 	var (
 		ipsFree = promauto.NewGauge(prometheus.GaugeOpts{
 			Name:        "aws_subnet_ips_free",
