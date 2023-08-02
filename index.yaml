@@ -3,6 +3,16 @@ entries:
   cloud-exporter:
   - apiVersion: v2
     appVersion: 0.2.8
+    created: "2023-08-02T14:47:45.699094443Z"
+    description: A Helm chart for Kubernetes
+    digest: 109c57475f1aafdb62f2bfb0d2452ccd4966a1c2b6667e05b12063bcd3559dae
+    name: cloud-exporter
+    type: application
+    urls:
+    - https://github.com/steveizzle/monitor_subnets/releases/download/cloud-exporter-0.2.9/cloud-exporter-0.2.9.tgz
+    version: 0.2.9
+  - apiVersion: v2
+    appVersion: 0.2.8
     created: "2023-08-02T14:31:20.183570158Z"
     description: A Helm chart for Kubernetes
     digest: 8c96dce7611e679063f14501b78ded59aaf3deb5077b8be90d9b34773bed1c65
@@ -71,4 +81,4 @@ entries:
     urls:
     - https://github.com/steveizzle/monitor_subnets/releases/download/cloud-exporter-0.2.2/cloud-exporter-0.2.2.tgz
     version: 0.2.2
-generated: "2023-08-02T14:31:20.185236385Z"
+generated: "2023-08-02T14:47:45.699126543Z"
