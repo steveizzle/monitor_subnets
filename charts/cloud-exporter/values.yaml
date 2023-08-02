@@ -18,8 +18,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/steveizzle/aws-metrics-prom-exporter
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  # tag: "0e201455e3ebda9457ef9bd3b13b798019126794"
+  tag: "0.2.8"
 
 podMonitor:
   create: true
