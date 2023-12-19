@@ -10,9 +10,9 @@ spec:
   - name: NETWORK
     rules:
     - alert: AwsSubnetFreeIps
-        annotations:
-          message: |
-            {{ "{{" }} $labels.subnet {{ "}}" }} has only {{ "{{" }} printf "%.2f" $value {{ "}}" }}% ips free
-          summary: Subnet is exhausted
+      annotations:
+        message: |
+          {{ "{{" }} $labels.subnet {{ "}}" }} has only {{ "{{" }} printf "%.2f" $value {{ "}}" }}% ips free
+        summary: Subnet is exhausted
       expr: "(aws_subnet_ips_free/aws_subnet_ips_total)<{{ .Values.alerts.config.subnetIpsFreeThreshold | default 0.1 }}"
 {{- end }}
